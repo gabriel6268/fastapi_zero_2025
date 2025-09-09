@@ -414,6 +414,18 @@ files = [
 all = ["flake8 (>=7.1.1)", "mypy (>=1.11.2)", "pytest (>=8.3.2)", "ruff (>=0.6.2)"]
 
 [[package]]
+name = "ignr"
+version = "2.2"
+description = "Python command line client to download.gitignore templates from gitignore.io"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "ignr-2.2-py3-none-any.whl", hash = "sha256:e8b6276aedab79b066d795e6e4b3f7b4c5668b68bf50a6c4fbf2b0cd17dda1db"},
+    {file = "ignr-2.2.tar.gz", hash = "sha256:382a81be67a34538a11ff8ab69063419b388cc32f01b4ace599c3f1c06526df4"},
+]
+
+[[package]]
 name = "iniconfig"
 version = "2.1.0"
 description = "brain-dead simple config-ini parsing"
@@ -1605,4 +1617,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "2bf5d5723caee434dfcf06175637661a2325cd741e34527acfc1c08b8a6e69ae"
+content-hash = "ad647ce266730a89d4055fd97aff7cebc2cf9bd25722e9dd18b864d986d597f7"

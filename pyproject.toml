@@ -8,7 +8,8 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.13,<4.0"
 dependencies = [
-    "fastapi[standard] (>=0.116.1,<0.117.0)"
+    "fastapi[standard] (>=0.116.1,<0.117.0)",
+    "ignr (>=2.2,<3.0)"
 ]
 
 
@@ -44,5 +45,5 @@ lint = 'ruff check'
 format = 'ruff format'
 run = 'fastapi dev app.py'
 pre_test = 'task lint'
-test = 'pytest -s -x --cov=fastapi_zero_2025 -vv'
+test = 'pytest -s -x --cov -vv'
 post_test = 'coverage html'
