@@ -3,25 +3,27 @@ from http import HTTPStatus
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
-app = FastAPI()
+from fastapi_zero_2025.schemas import Message
+
+app = FastAPI(title='API para estudos', version='1.0')
 
 
 # Endpoint inicial para exemplo
-@app.get('/', status_code=HTTPStatus.OK)
+@app.get('/', status_code=HTTPStatus.OK, response_model=Message)
 def read_root():
     return {'message': 'Olá, Mundo!'}
 
 
-# Endpoint para exemplo de html
-@app.get('/hello/', response_class=HTMLResponse, status_code=HTTPStatus.OK)
-def hello():
-    return """
-        <html>
-            <head>
-                <title>Hello, World!</title>
-            </head>
-            <body>
-                <h1>Hello, World!!!</h1>
-            </body>
-        </html>
-    """
+# Endpoint que retorna HTML -> 'Olá, Mundo!'
+@app.get('/inicial/', status_code=HTTPStatus.OK, response_class=HTMLResponse)
+def ola_mundo():
+    return """<html>
+        <head>
+            <title>
+                Olá, mundo
+            </title>
+        </head>
+        <body>
+            <h1>Olá, Mundo!!</h1>
+        </body>
+    </html>"""

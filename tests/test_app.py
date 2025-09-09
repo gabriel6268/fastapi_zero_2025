@@ -7,12 +7,32 @@ from fastapi.testclient import TestClient
 from fastapi_zero_2025.app import app
 
 client_test = TestClient(app)
-router_get = client_test.get('/')
+get_home = client_test.get('/')
+get_inicial = client_test.get('/inicial/')
 
 
+# testes endpoint /
 def test_status_code_retorna_200():
-    assert router_get.status_code == HTTPStatus.OK
+    assert get_home.status_code == HTTPStatus.OK
 
 
 def test_retorna_ola_mundo():
-    assert router_get.json() == {'message': 'Olá, Mundo!'}
+    assert get_home.json() == {'message': 'Olá, Mundo!'}
+
+
+# testes emdpoint inicial html
+def test_inicial_status_code_retorna_200():
+    assert get_inicial.status_code == HTTPStatus.OK
+
+
+def test_inicial_retorna_html_ola_mundo():
+    assert get_inicial.text == """<html>
+        <head>
+            <title>
+                Olá, mundo
+            </title>
+        </head>
+        <body>
+            <h1>Olá, Mundo!!</h1>
+        </body>
+    </html>"""
