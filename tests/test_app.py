@@ -2,30 +2,26 @@
 
 from http import HTTPStatus
 
-from fastapi.testclient import TestClient
 
-from fastapi_zero_2025.app import app
-
-client_test = TestClient(app)
-get_home = client_test.get('/')
-get_inicial = client_test.get('/inicial/')
-
-
-# testes endpoint /
-def test_status_code_retorna_200():
+# testes endpoint home
+def test_status_code_retorna_200(client):
+    get_home = client.get('/')
     assert get_home.status_code == HTTPStatus.OK
 
 
-def test_retorna_ola_mundo():
+def test_retorna_ola_mundo(client):
+    get_home = client.get('/')
     assert get_home.json() == {'message': 'Olá, Mundo!'}
 
 
 # testes endpoint inicial html
-def test_inicial_status_code_retorna_200():
+def test_inicial_status_code_retorna_200(client):
+    get_inicial = client.get('/inicial/')
     assert get_inicial.status_code == HTTPStatus.OK
 
 
-def test_inicial_retorna_html_ola_mundo():
+def test_inicial_retorna_html_ola_mundo(client):
+    get_inicial = client.get('/inicial/')
     assert (
         get_inicial.text
         == """<html>
@@ -42,24 +38,105 @@ def test_inicial_retorna_html_ola_mundo():
 
 
 # testes endpoint rota criação de usuario
-get_create_user = client_test.post(
-    '/users/',
-    json={
-        'id': 1,
-        'username': 'Gabriel',
-        'email': 'gabriel@example.com',
-        'password': '123',
-    },
-)
+def test_create_user_retorna_dict_infos(client):
+    response = client.post(
+        '/create_user/',
+        json={
+            'id': 1,
+            'username': 'Gabriel',
+            'email': 'gabriel@example.com',
+            'password': '123',
+        },
+    )
 
-
-def test_create_user_retorna_200():
-    assert get_create_user.status_code == HTTPStatus.CREATED
-
-
-def test_create_user_retorna_dict_infos():
-    assert get_create_user.json() == {
+    assert response.json() == {
         'id': 1,
         'username': 'Gabriel',
         'email': 'gabriel@example.com',
     }
+    assert response.status_code == HTTPStatus.CREATED
+
+
+# teste endpoint leitura todos os usuarios
+def test_read_users_retorna_dict_infos(client):
+    response = client.get('/users/')
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {
+        'users': [
+            {'username': 'Gabriel', 'email': 'gabriel@example.com', 'id': 1}
+        ]
+    }
+
+
+# teste endpoint leitura usuario por id
+def test_read_user_id_retorna_dict_info(client):
+    response = client.get('/user/1/')
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {
+        'username': 'Gabriel',
+        'email': 'gabriel@example.com',
+        'id': 1,
+    }
+
+
+def test_read_user_id_not_found(client):
+    response = client.get('/user/10/')
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {'detail': 'User not found'}
+
+
+# teste endpoint atualização usuario por id
+def test_update_user_retorna_user_att(client):
+    response = client.put(
+        '/users/1/',
+        json={
+            'id': 1,
+            'username': 'Ana',
+            'email': 'ana@example.com',
+            'password': '123',
+        },
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {
+        'id': 1,
+        'username': 'Ana',
+        'email': 'ana@example.com',
+    }
+
+
+def test_update_user_not_found(client):
+    response = client.put(
+        '/users/2/',
+        json={
+            'id': 1,
+            'username': 'Ana',
+            'email': 'ana@example.com',
+            'password': '123',
+        },
+    )
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {'detail': 'User not found'}
+
+
+# teste endpoint delecao de usuario por id
+def test_delete_user(client):
+    response = client.delete('/users/delete/1/')
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {
+        'id': 1,
+        'username': 'Ana',
+        'email': 'ana@example.com',
+    }
+
+
+def test_delete_user_not_found(client):
+    response = client.delete('/users/delete/10/')
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {'detail': 'User not found'}
