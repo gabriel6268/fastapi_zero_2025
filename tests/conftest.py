@@ -1,10 +1,13 @@
+from contextlib import contextmanager
+from datetime import datetime
+
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session
 
 from fastapi_zero_2025.app import app
-from fastapi_zero_2025.models import table_registry
+from fastapi_zero_2025.models import User, table_registry
 
 
 # Arrange geral para testes
@@ -27,3 +30,18 @@ def session():
 
     # deletando s tabela
     table_registry.metadata.drop_all(engine)
+
+
+@contextmanager
+def mock_db_time(model=User, time=datetime(2025, 5, 20)):
+    def fake_time_hook(mapper, connection, target):
+        event.listen(model, 'before_insert', fake_time_hook)
+
+        yield time
+
+        event.remove(model, 'before_insert', fake_time_hook)
+
+
+@pytest.fixture
+def mock_db_time():
+    return mock_db_time()
