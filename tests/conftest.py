@@ -33,7 +33,7 @@ def session():
 
 
 @contextmanager
-def mock_db_time(model=User, time=datetime(2025, 5, 20)):
+def mock_db_time_context(model=User, time=datetime(2025, 5, 20)):
     def fake_time_hook(mapper, connection, target):
         event.listen(model, 'before_insert', fake_time_hook)
 
@@ -44,4 +44,4 @@ def mock_db_time(model=User, time=datetime(2025, 5, 20)):
 
 @pytest.fixture
 def mock_db_time():
-    return mock_db_time()
+    return mock_db_time_context()

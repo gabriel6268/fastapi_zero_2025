@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
 from fastapi_zero_2025.schemas import (
@@ -10,6 +10,7 @@ from fastapi_zero_2025.schemas import (
     UserPublic,
     UserSchema,
 )
+from fastapi_zero_2025.validate import validate
 
 app = FastAPI(title='API para estudos', version='1.0')
 database = []
@@ -78,13 +79,12 @@ def read_users():
     tags=[tag_get],
 )
 def read_user_id(user_id: int):
-    if user_id < 0 or user_id > len(database):
-        raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail='User not found'
-        )
+    validate(user_id, database)
     return database[user_id - 1]
 
 
+# Endpoin para recuperar usuario pelo ID
+@app.get('/users/{id}/')
 # Endpoint para alteração dos usuarios por id
 @app.put(
     '/users/{user_id}/',
@@ -93,11 +93,7 @@ def read_user_id(user_id: int):
     tags=[tag_put],
 )
 def update_user(user_id: int, user: UserSchema):
-    if user_id > len(database) or user_id < 1:
-        raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail='User not found'
-        )
-
+    validate(user_id, database)
     user_with_id = UserDB(**user.model_dump(), id=user_id)
     database[user_id - 1] = user_with_id
     return user_with_id
@@ -108,9 +104,6 @@ def update_user(user_id: int, user: UserSchema):
     '/users/delete/{user_id}/', tags=[tag_delete], response_model=UserPublic
 )
 def delete_user(user_id: int):
-    if user_id > len(database) or user_id < 1:
-        raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail='User not found'
-        )
+    validate(user_id, database)
     user_del = database.pop(user_id - 1)
     return user_del
